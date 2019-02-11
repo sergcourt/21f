@@ -8,7 +8,7 @@ import os
 
 import  numpy as  np
 
-
+import seaborn as sns
 import math
 import matplotlib.pyplot as plt
 import numpy as np
@@ -49,7 +49,7 @@ data_table=pd.read_csv("21f_1.csv",  low_memory=False )
 
 #print(data_table.head())
 
-col_list=['PHY Date Week Num','PHY to TH','Studio', 'Rating', 'Box Office']
+col_list=['PHY Date Week Num','PHY to TH','Studio', 'Rating', 'Box Office','Physical W1 Units']
 
 data_table=data_table.loc[:, col_list]
 
@@ -86,11 +86,19 @@ dataset=pd.get_dummies(data=dataset, columns=['Rating'])
 
 
 
-print(dataset.tail())
+dataset.info()
+
+print(dataset.describe(include='all'))
+
+
 
 # encoded = to_categorical(data)
 
 print(dataset.isna().sum())
+
+
+sns.jointplot(x="PHY Date Week Num", y="Physical W1 Units", data=dataset, height=11, ratio=4, color="g")
+plt.show()
 
 
 
