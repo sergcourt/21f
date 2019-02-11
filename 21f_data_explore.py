@@ -60,25 +60,8 @@ dataset=data_table.copy()
 
 
 
-studio=dataset.pop('Studio')
 
-dataset['Paramount Pictures']=(studio==1)*1.0
-
-dataset['Warner Bros.']=(studio==2)*1.0
-
-dataset['Sony Pictures']=(studio==3)*1.0
-
-dataset['Lions Gate']=(studio==4)*1.0
-
-dataset['Universal Studios']=(studio==5)*1.0
-
-dataset['20th Century Fox']=(studio==6)*1.0
-
-dataset['Walt Disney Studios']=(studio==7)*1.0
-
-dataset['MGM']=(studio==8)*1.0
-
-dataset['OTHER']=(studio==9)*1.0
+dataset=pd.get_dummies(data=dataset, columns=['Studio'])
 
 
 dataset=pd.get_dummies(data=dataset, columns=['Rating'])
@@ -99,7 +82,6 @@ print(dataset.isna().sum())
 
 sns.jointplot(x="PHY Date Week Num", y="Physical W1 Units", data=dataset, height=11, ratio=4, color="g")
 plt.show()
-
 
 
 
