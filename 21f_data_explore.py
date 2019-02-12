@@ -6,6 +6,13 @@ import pandas as pd
 import webbrowser
 import os
 
+
+import warnings
+from tqdm import tqdm
+from datetime import datetime
+import json
+warnings.filterwarnings("ignore")
+
 import  numpy as  np
 
 import seaborn as sns
@@ -45,11 +52,11 @@ print(tf.__version__)
 #col_names=['PHY Date Week Num','PHY to TH','Studio', 'Rating', 'Box Office' ]
 
 
-data_table=pd.read_csv("21f_1.csv",  low_memory=False )
+data_table=pd.read_csv("21f_2.csv",  low_memory=False )
 
 #print(data_table.head())
 
-col_list=['PHY Date Week Num','PHY to TH','Studio', 'Rating', 'Box Office','Physical W1 Units']
+col_list=['PHY Date Week Num','PHY to TH','Studio', 'Rating', 'Box Office','Physical Date','Physical W1 Units']
 
 data_table=data_table.loc[:, col_list]
 
@@ -67,11 +74,13 @@ dataset=pd.get_dummies(data=dataset, columns=['Studio'])
 dataset=pd.get_dummies(data=dataset, columns=['Rating'])
 
 
+dataset.rename(index=str, columns={'Box Office':'boxoffice','Physical W1 Units':'phy_w1_units', 'Physical Date':'phy_release_date' }, inplace=True)
 
 
 dataset.info()
 
-print(dataset.describe(include='all'))
+
+print(dataset.describe)
 
 
 
@@ -79,9 +88,66 @@ print(dataset.describe(include='all'))
 
 print(dataset.isna().sum())
 
+releaseDate = pd.to_datetime(dataset['phy_release_date'])
+dataset['phy_release_dayofweek']=releaseDate.dt.dayofweek
+dataset['phy_release_quarter']=releaseDate.dt.quarter
 
-sns.jointplot(x="PHY Date Week Num", y="Physical W1 Units", data=dataset, height=11, ratio=4, color="g")
+dataset.info()
+
+print(dataset.columns)
+#sns.jointplot(x='boxoffice',  y= 'phy_w1_units',data=dataset, height=11, ratio=4, color='r' )
+#plt.show()
+
+
+
+#sns.distplot(dataset.boxoffice)
+#dataset.plot.hist()
+
+# plt.figure(figsize=(20,12))
+
+'''
+sns.countplot(dataset['PHY Date Week Num'].sort_values())
+plt.title('movie release count by week',fontsize=20)
+loc, labels=plt.xticks()
+plt.xticks(fontsize=12,rotation=90)
 plt.show()
+
+
+
+sns.countplot(dataset['phy_release_quarter'].sort_values())
+plt.title('movie release count by quarter',fontsize=20)
+loc, labels=plt.xticks()
+plt.xticks(fontsize=12,rotation=90)
+plt.show()
+
+
+sns.countplot(dataset['phy_release_dayofweek'].sort_values())
+plt.title('movie release count by dayofweek',fontsize=20)
+loc, labels=plt.xticks()
+plt.xticks(fontsize=12,rotation=90)
+plt.show()
+
+'''
+
+
+
+dataset['meanUnitsByWeek'] = dataset.groupby("PHY to TH")["phy_w1_units"].aggregate('mean')
+dataset['meanUnitsByWeek'].plot(figsize=(15,10),color="g")
+
+plt.xticks(np.arange(0,60,1))
+plt.xlabel("Release week")
+plt.ylabel("Units Sold")
+plt.title("Movie Mean Units Release by Week",fontsize=20)
+plt.show()
+
+
+
+
+
+
+
+
+
 
 
 
@@ -128,6 +194,7 @@ with open('data.html', 'w') as f:
 
 full_filename=os.path.abspath('data.html')
 webbrowser.open('file://{}'.format(full_filename))
+
 
 
 '''
