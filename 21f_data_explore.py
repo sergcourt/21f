@@ -60,7 +60,7 @@ data_table=pd.read_csv("21f_2.csv",  low_memory=False )
 
 #print(data_table.head())
 
-col_list=['PHY Date Week Num','PHY to TH','Studio', 'Rating', 'Box Office','Physical Date','Physical W1 Units']
+col_list=['PHY Date Week Num','PHY to TH', 'Box Office','Physical Date','Physical W1 Units']
 
 data_table=data_table.loc[:, col_list]
 
@@ -71,11 +71,12 @@ dataset=data_table.copy()
 
 
 
+#transormation for Rating and Studio (now removed from dataset and muted)
 
-dataset=pd.get_dummies(data=dataset, columns=['Studio'])
+#dataset=pd.get_dummies(data=dataset, columns=['Studio'])
 
 
-dataset=pd.get_dummies(data=dataset, columns=['Rating'])
+#dataset=pd.get_dummies(data=dataset, columns=['Rating'])
 
 
 dataset.rename(index=str, columns={'Box Office':'boxoffice','Physical W1 Units':'phy_w1_units', 'Physical Date':'phy_release_date' }, inplace=True)
@@ -219,16 +220,16 @@ print("Note: Y values were scaled by multiplying by {:.10f} and adding {:.4f}".f
 
 
 # model parameters
-learning_rate = 0.001
-training_epochs = 1000
+learning_rate = 0.0001
+training_epochs = 10000
 
 #  inputs and outputs in neural network
-number_of_inputs = 21
+number_of_inputs = 5
 number_of_outputs = 1
 
 # Define how many neurons we want in each layer of our neural network
 layer_1_nodes = 10
-layer_2_nodes = 20
+layer_2_nodes = 100
 layer_3_nodes = 10
 
 
@@ -366,11 +367,11 @@ with tf.Session() as session:
     # Unscale the data back to it's original units
     Y_predicted = Y_scaler.inverse_transform(Y_predicted_scaled).astype(int)
 
-    real_units = dataset['phy_w1_units'].values[0]
-    predicted_units = Y_predicted[0][0]
+    real_units = dataset['phy_w1_units'].values[10]
+    predicted_units = Y_predicted[10][0]
 
-    print("The actual units of Movie #1  were:  ${}".format(real_units))
-    print("The neural network predicted units: ${}".format(predicted_units))
+    print("The actual units of Movie #1  were:  {}".format(real_units))
+    print("The neural network predicted units: {}".format(predicted_units))
 
     save_path = saver.save(session, "logs/trained_model.ckpt")
     print("Model saved: {}".format(save_path))
