@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import tensorboard
 
 from sklearn.preprocessing import MinMaxScaler
 from IPython import display
@@ -226,9 +227,10 @@ number_of_inputs = 21
 number_of_outputs = 1
 
 # Define how many neurons we want in each layer of our neural network
-layer_1_nodes = 21
-layer_2_nodes = 50
-layer_3_nodes = 21
+layer_1_nodes = 10
+layer_2_nodes = 20
+layer_3_nodes = 10
+
 
 # Section One: Define the layers of the neural network itself
 
@@ -316,6 +318,10 @@ saver = tf.train.Saver()
 # Initialize a session so that we can run TensorFlow operations
 with tf.Session() as session:
 
+
+    #Restorre variables insteadd of initializing them
+    #saver.restore(session, 'logs/trained_model.ckpt')
+
     # Run the global variable initializer to initialize all variables and layers of the neural network
     session.run(tf.global_variables_initializer())
 
@@ -357,14 +363,14 @@ with tf.Session() as session:
     # Pass in the X testing data and run the "prediciton" operation
     Y_predicted_scaled = session.run(prediction, feed_dict={X: X_scaled_testing})
 
-    # Unscale the data back to it's original units (dollars)
-    Y_predicted = Y_scaler.inverse_transform(Y_predicted_scaled)
+    # Unscale the data back to it's original units
+    Y_predicted = Y_scaler.inverse_transform(Y_predicted_scaled).astype(int)
 
-    real_earnings = Y_testing['phy_w1_units'].values[0]
-    predicted_earnings = Y_predicted[0][0]
+    real_units = dataset['phy_w1_units'].values[0]
+    predicted_units = Y_predicted[0][0]
 
-    print("The actual earnings of Game #1 were ${}".format(real_earnings))
-    print("Our neural network predicted earnings of ${}".format(predicted_earnings))
+    print("The actual units of Movie #1  were:  ${}".format(real_units))
+    print("The neural network predicted units: ${}".format(predicted_units))
 
     save_path = saver.save(session, "logs/trained_model.ckpt")
     print("Model saved: {}".format(save_path))
