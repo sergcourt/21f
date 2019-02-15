@@ -79,7 +79,10 @@ dataset=data_table.copy()
 #dataset=pd.get_dummies(data=dataset, columns=['Rating'])
 
 
-dataset.rename(index=str, columns={'Box Office':'boxoffice','Physical W1 Units':'phy_w1_units', 'Physical Date':'phy_release_date' }, inplace=True)
+dataset.rename(index=str, columns={'Box Office':'boxoffice',
+                                   'Physical W1 Units':'phy_w1_units',
+                                   'Physical Date':'phy_release_date'
+                                   }, inplace=True)
 
 
 dataset.info()
@@ -104,6 +107,9 @@ print(dataset.columns)
 
 
 dataset.phy_release_date.describe()
+
+
+#exploring and visualizing the data
 
 
 #sns.jointplot(x='boxoffice',  y= 'phy_w1_units',data=dataset, height=8, ratio=4, color='r' )
@@ -172,13 +178,29 @@ test.describe()
 
 
 # Pulling out columns for X  and Y in train set
-X_training = train.drop(['phy_w1_units','phy_release_date'], axis=1).values
+X_training = train.drop(['phy_w1_units',
+                         'phy_release_date',
+                         'phy_release_dayofweek',
+                         'phy_release_quarter',
+                         'PHY Date Week Num',
+                         'PHY to TH'
+                         ], axis=1).values
+
+
 #X_training = train.drop('phy_release_date', axis=1).values
 Y_training = train[['phy_w1_units']].values
 
 
 # Pulling out columns for X  and Y in test set
-X_testing = test.drop(['phy_w1_units','phy_release_date'], axis=1).values
+X_testing = test.drop(['phy_w1_units',
+                       'phy_release_date',
+                       'phy_release_dayofweek',
+                       'phy_release_quarter',
+                       'PHY Date Week Num',
+                       'PHY to TH'
+                       ], axis=1).values
+
+
 Y_testing = test[['phy_w1_units']].values
 
 
@@ -221,15 +243,16 @@ print("Note: Y values were scaled by multiplying by {:.10f} and adding {:.4f}".f
 
 # model parameters
 learning_rate = 0.0001
-training_epochs = 10000
+training_epochs = 3000
+
 
 #  inputs and outputs in neural network
-number_of_inputs = 5
+number_of_inputs =1
 number_of_outputs = 1
 
 # Define how many neurons we want in each layer of our neural network
 layer_1_nodes = 10
-layer_2_nodes = 100
+layer_2_nodes = 30
 layer_3_nodes = 10
 
 
@@ -367,8 +390,8 @@ with tf.Session() as session:
     # Unscale the data back to it's original units
     Y_predicted = Y_scaler.inverse_transform(Y_predicted_scaled).astype(int)
 
-    real_units = dataset['phy_w1_units'].values[10]
-    predicted_units = Y_predicted[10][0]
+    real_units = dataset['phy_w1_units'].values[5]
+    predicted_units = Y_predicted[5][0]
 
     print("The actual units of Movie #1  were:  {}".format(real_units))
     print("The neural network predicted units: {}".format(predicted_units))
