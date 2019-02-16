@@ -50,97 +50,92 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # print(tf.VERSION)
 
 
-# col_names=['PHY Date Week Num','PHY to TH','Studio', 'Rating', 'Box Office' ]
 
 
-data_table = pd.read_csv("21f_2.csv", low_memory=False)
+data_table = pd.read_csv("21f_data_phy_only_no_talent.csv", low_memory=False)
 
-# print(data_table.head())
 
-col_list = ['PHY Date Week Num', 'PHY to TH', 'Box Office', 'Physical Date', 'Physical W1 Units']
 
-data_table = data_table.loc[:, col_list]
+#goiing at it in different way
+
+
+
+col_list=[ 'Box Office',
+           'Physical W1 Units',
+           #'Count of Awards'
+           ]
+
+data_table=data_table.loc[:, col_list]
+
+
+
+#data_table = data_table.drop(['Title'],axis=1 )
+
+
+#data_table = data_table.drop(data_table.columns[9: ],axis=1 )
+
 
 dataset = data_table.copy()
 
-# print(dataset.tail())
+
+
+
+#dataset.info()
+
+#print(dataset.describe())
+
+#print(dataset.shape)
+
 
 
 # transormation for Rating and Studio (now removed from dataset and muted)
 
-# dataset=pd.get_dummies(data=dataset, columns=['Studio'])
+#dataset=pd.get_dummies(data=dataset, columns=['Studio'])
 
 
-# dataset=pd.get_dummies(data=dataset, columns=['Rating'])
+#dataset=pd.get_dummies(data=dataset, columns=['Rating'])
+
+
+#dataset=pd.get_dummies(data=dataset, columns=['PHY Date Week Num'])
+
 
 
 dataset.rename(index=str, columns={'Box Office': 'boxoffice',
                                    'Physical W1 Units': 'phy_w1_units',
-                                   'Physical Date': 'phy_release_date'
+                                   #'Physical Date': 'phy_release_date'
                                    }, inplace=True)
 
-dataset.info()
-
-print(dataset.describe)
-
-dataset['phy_release_date'] = pd.to_datetime(dataset['phy_release_date'])
-
-# encoded = to_categorical(data)
-
-print(dataset.isna().sum())
-
-releaseDate = pd.to_datetime(dataset['phy_release_date'])
-dataset['phy_release_dayofweek'] = releaseDate.dt.dayofweek
-dataset['phy_release_quarter'] = releaseDate.dt.quarter
-
-dataset.info()
-
-print(dataset.columns)
-
-dataset.phy_release_date.describe()
-
-# exploring and visualizing the data
 
 
-# sns.jointplot(x='boxoffice',  y= 'phy_w1_units',data=dataset, height=8, ratio=4, color='r' )
-# plt.show()
+#dataset['phy_release_date']=pd.to_datetime(dataset['phy_release_date'])
 
 
-# sns.jointplot(x='PHY Date Week Num',  y= 'phy_w1_units',data=dataset, height=9, ratio=4, color='r' )
-# plt.show()
 
 
-# sns.distplot(dataset.boxoffice)
-# dataset.plot.hist()
 
-# plt.figure(figsize=(20,12))
-
-
-# sns.countplot(dataset['PHY Date Week Num'].sort_values())
-# plt.title('movie release count by week',fontsize=20)
-# loc, labels=plt.xticks()
-# plt.xticks(fontsize=12,rotation=90)
-# plt.show()
+#releaseDate = pd.to_datetime(dataset['phy_release_date'])
+#dataset['phy_release_dayofweek']=releaseDate.dt.dayofweek
+#dataset['phy_release_quarter']=releaseDate.dt.quarter
 
 
-# sns.countplot(dataset['phy_release_quarter'].sort_values())
-# plt.title('movie release count by quarter',fontsize=20)
-# loc, labels=plt.xticks()
-# plt.xticks(fontsize=12,rotation=90)
-# plt.show()
 
 
-'''
 
-dataset['meanUnitsByWeek'] = dataset.groupby("PHY to TH")["phy_w1_units"].aggregate('mean')
-dataset['meanUnitsByWeek'].plot(figsize=(15,10),color="g")
 
-plt.xlabel("Release week")
-plt.ylabel("Units Sold")
-plt.title("Movie Mean Units Release by Week",fontsize=20)
-plt.show()
 
-'''
+
+
+#dataset.info()
+
+#print(dataset.describe)
+
+#print(dataset.isna().sum())
+
+
+
+
+
+
 
 # split train and test from dataset
 
@@ -156,35 +151,35 @@ test.info()
 test.describe()
 
 # Pulling out columns for X  and Y in train set
-X_training = train.drop(['phy_w1_units',
-                         'phy_release_date',
-                         'phy_release_dayofweek',
-                         'phy_release_quarter',
-                         'PHY Date Week Num',
-                         'PHY to TH'
-                         ], axis=1).values
+X_training = train.drop(['phy_w1_units'], axis=1).values
 
-# X_training = train.drop('phy_release_date', axis=1).values
+
+
 Y_training = train[['phy_w1_units']].values
 
+
+
+
 # Pulling out columns for X  and Y in test set
-X_testing = test.drop(['phy_w1_units',
-                       'phy_release_date',
-                       'phy_release_dayofweek',
-                       'phy_release_quarter',
-                       'PHY Date Week Num',
-                       'PHY to TH'
-                       ], axis=1).values
+X_testing = test.drop(['phy_w1_units'], axis=1).values
 
 Y_testing = test[['phy_w1_units']].values
 
+
+
+
+
 # verify succeful selection
 
-print(X_training.shape)
-print(Y_training.shape)
+#print(X_training.shape)
+#print(Y_training.shape)
 
-print(X_testing.shape)
-print(Y_testing.shape)
+#print(X_testing.shape)
+#print(Y_testing.shape)
+
+
+
+
 
 # set up a data scaler to a range of 0 to 1 for the neural
 # network to work well. Create scalers for the inputs and outputs.
@@ -202,21 +197,21 @@ Y_scaled_testing = Y_scaler.transform(Y_testing)
 print(X_scaled_testing.shape)
 print(Y_scaled_testing.shape)
 
-print("Note: Y values were scaled by multiplying by {:.10f} and adding {:.4f}".format(Y_scaler.scale_[0],
+print("Note: Y is scaled by multiplying by {:.10f} and adding {:.4f}".format(Y_scaler.scale_[0],
                                                                                       Y_scaler.min_[0]))
 
 # model parameters
-learning_rate = 0.0001
-training_epochs = 3000
+learning_rate = 0.001
+training_epochs = 10000
 
 #  inputs and outputs in neural network
 number_of_inputs = 1
 number_of_outputs = 1
 
 # Define how many neurons we want in each layer of our neural network
-layer_1_nodes = 10
-layer_2_nodes = 30
-layer_3_nodes = 10
+layer_1_nodes = 5
+layer_2_nodes = 5
+layer_3_nodes = 5
 
 # Section One: Define the layers of the neural network itself
 
@@ -269,27 +264,11 @@ with tf.variable_scope('logging'):
     tf.summary.scalar('current_cost', cost)
     summary = tf.summary.merge_all()
 
-'''
-# Initialize a session so that we can run TensorFlow operations
-with tf.Session() as session:
 
-    # Run the global variable initializer to initialize all variables and layers of the neural network
-    session.run(tf.global_variables_initializer())
 
-    # Run the optimizer over and over to train the network.
-    # One epoch is one full run through the training data set.
-    for epoch in range(training_epochs):
 
-        # Feed in the training data and do one step of neural network training
-        session.run(optimizer, feed_dict={X: X_scaled_training, Y: Y_scaled_training})
 
-        # Print the current training status to the screen
-        print("Training pass: {}".format(epoch))
 
-    # Training is now complete!
-    print("Training is complete!")
-
-'''
 
 saver = tf.train.Saver()
 
@@ -353,53 +332,9 @@ with tf.Session() as session:
     save_path = saver.save(session, "logs/trained_model.ckpt")
     print("Model saved: {}".format(save_path))
 
-'''
-
-
-
-
-features_df= pd.get_dummies (df,columns=['Studio'])
-del features_df['Physical W1 Units']
-
-
-
-
-X=features_df.as_matrix()
-y= df['Physical W1 Units'].as_matrix()
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
-
-
-
-
-# Fit regression model
-model = ensemble.GradientBoostingRegressor(
-    n_estimators=1000,
-    learning_rate=0.1,
-    max_depth=6,
-    min_samples_leaf=9,
-    max_features=0.1,
-    loss='huber',
-    random_state=0
-)
-model.fit(X_train, y_train)
-
-
-# Save the trained model to a file so we can use it in other programs
-joblib.dump(model, '21f_trained_model_test_1.pkl')
 
 
 
 
 
-html=data_table[0:100].to_html()
 
-with open('data.html', 'w') as f:
-    f.write(html)
-
-full_filename=os.path.abspath('data.html')
-webbrowser.open('file://{}'.format(full_filename))
-
-
-
-'''
