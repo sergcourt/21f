@@ -62,7 +62,7 @@ data_table = pd.read_csv("21f_data_phy_only_no_talent.csv", low_memory=False)
 
 col_list=[ 'Box Office',
            'Physical W1 Units',
-           #'Count of Awards'
+           'Count of Awards'
            ]
 
 data_table=data_table.loc[:, col_list]
@@ -118,12 +118,12 @@ dataset.rename(index=str, columns={'Box Office': 'boxoffice',
 #dataset['phy_release_quarter']=releaseDate.dt.quarter
 
 
+tf.keras.utils.normalize(
+    dataset,
+    axis=1,
+    order=2
 
-
-
-
-
-
+)
 
 #dataset.info()
 
@@ -200,18 +200,21 @@ print(Y_scaled_testing.shape)
 print("Note: Y is scaled by multiplying by {:.10f} and adding {:.4f}".format(Y_scaler.scale_[0],
                                                                                       Y_scaler.min_[0]))
 
+
+
+
 # model parameters
 learning_rate = 0.001
 training_epochs = 10000
 
 #  inputs and outputs in neural network
-number_of_inputs = 1
+number_of_inputs = 2
 number_of_outputs = 1
 
 # Define how many neurons we want in each layer of our neural network
-layer_1_nodes = 5
+layer_1_nodes = 3
 layer_2_nodes = 5
-layer_3_nodes = 5
+layer_3_nodes = 3
 
 # Section One: Define the layers of the neural network itself
 
